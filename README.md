@@ -18,3 +18,7 @@ Whether your game lacks a built-in crosshair or you just want a clean static aim
 ---
 
 Want a better aim? crosshairZ has your back 🎯
+
+---
+
+Im still working on it so if there is any bug please conntet to "zinarr" in discord
