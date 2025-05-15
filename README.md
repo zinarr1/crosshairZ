@@ -8,6 +8,7 @@ And i made it in 2 hours (i think im spiderman)
 
 ## ⚙️ Features
 
+- 🖥️ monitor select support – crosshair can be used on setups with multiple screens
 - 🔲 Always-on-top transparent overlay
 - 🎨 Customizable crosshair image – replace `crosshair.png` or select your own PNG via settings
 - 💾 Save and load multiple profiles, including selected PNG paths
