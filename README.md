@@ -46,4 +46,14 @@ please contact me on Discord: **zinarr**
 
 ---
 
-Want better aim? **crosshairZ** has your back 🎯
+# 🎯 Like this app?
+If you enjoy using this app and want to support its development, I'd truly appreciate a small gift!
+I currently accept gift cards only 💳
+
+🎁 Send via Discord: zinarr
+
+Thanks for your support! 🙏
+
+---
+
+Want better aim? **crosshairZ** has your back 🎯.
