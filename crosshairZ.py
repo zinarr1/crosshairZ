@@ -4,8 +4,11 @@ import os
 import threading
 import keyboard
 import ctypes
+import mouse  # Add this import
 from PyQt5 import QtWidgets, QtGui, QtCore
+
 SETTINGS_FILE = "settings.json"
+PROFILES_FILE = "profiles.json"  # For profile support
 
 print("Program starting...")
 
@@ -15,17 +18,43 @@ def load_settings():
             data = json.load(f)
             data["x"] = int(data.get("x") or 0)
             data["y"] = int(data.get("y") or 0)
+            # Add default for new settings
+            if "hide_on_right_click" not in data:
+                data["hide_on_right_click"] = True
+            if "profile" not in data:
+                data["profile"] = "Default"
+            if "color" not in data:
+                data["color"] = "#FF0000"  # Default red
+            if "opacity" not in data:
+                data["opacity"] = 1.0  # Default fully opaque
+            if "use_color_overlay" not in data:
+                data["use_color_overlay"] = True
             return data
     return {
         "size": 40,
         "crosshair": "crosshair.png",
         "x": 0,
-        "y": 0
+        "y": 0,
+        "hide_on_right_click": True,
+        "profile": "Default",
+        "color": "#FF0000",        # Default red
+        "opacity": 1.0,            # Default fully opaque
+        "use_color_overlay": True
     }
 
 def save_settings(settings):
     with open(SETTINGS_FILE, "w") as f:
         json.dump(settings, f, indent=4)
+
+def load_profiles():
+    if os.path.exists(PROFILES_FILE):
+        with open(PROFILES_FILE, "r") as f:
+            return json.load(f)
+    return {"Default": load_settings()}
+
+def save_profiles(profiles):
+    with open(PROFILES_FILE, "w") as f:
+        json.dump(profiles, f, indent=4)
 
 class SettingsDialog(QtWidgets.QDialog):
     def __init__(self, settings, crosshair, parent=None):
@@ -33,6 +62,8 @@ class SettingsDialog(QtWidgets.QDialog):
         self.setWindowTitle("Settings")
         self.settings = settings
         self.crosshair = crosshair
+
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
         layout = QtWidgets.QFormLayout(self)
 
@@ -46,34 +77,94 @@ class SettingsDialog(QtWidgets.QDialog):
         sizeLayout.addWidget(self.sizeLabel)
         layout.addRow("Crosshair Size:", sizeLayout)
 
+        # Hide on right click checkbox
+        self.hideRightClickCheck = QtWidgets.QCheckBox("Hide on right click")
+        self.hideRightClickCheck.setChecked(settings.get("hide_on_right_click", True))
+        layout.addRow(self.hideRightClickCheck)
+
+        # Use color overlay checkbox
+        self.useColorOverlayCheck = QtWidgets.QCheckBox("Use color overlay for PNG")
+        self.useColorOverlayCheck.setChecked(settings.get("use_color_overlay", True))
+        layout.addRow(self.useColorOverlayCheck)
+
+        # Profile selection
+        self.profiles = load_profiles()
+        self.profileCombo = QtWidgets.QComboBox()
+        self.profileCombo.addItems(self.profiles.keys())
+        self.profileCombo.setCurrentText(settings.get("profile", "Default"))
+        layout.addRow("Profile:", self.profileCombo)
+
+        self.saveProfileBtn = QtWidgets.QPushButton("Save as Profile")
+        layout.addRow(self.saveProfileBtn)
+        self.saveProfileBtn.clicked.connect(self.save_profile)
+
+        # Color picker
+        self.colorBtn = QtWidgets.QPushButton()
+        self.colorBtn.setStyleSheet(f"background-color: {settings.get('color', '#FF0000')}")
+        self.colorBtn.clicked.connect(self.pick_color)
+        layout.addRow("Crosshair Color:", self.colorBtn)
+
+        # Opacity slider
+        self.opacitySlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.opacitySlider.setRange(10, 100)
+        self.opacitySlider.setValue(int(settings.get("opacity", 1.0) * 100))
+        self.opacityLabel = QtWidgets.QLabel(str(self.opacitySlider.value()))
+        opacityLayout = QtWidgets.QHBoxLayout()
+        opacityLayout.addWidget(self.opacitySlider)
+        opacityLayout.addWidget(self.opacityLabel)
+        layout.addRow("Opacity:", opacityLayout)
+        self.opacitySlider.valueChanged.connect(lambda v: self.opacityLabel.setText(str(v)))
+
+        # Live update for color, opacity, and overlay
+        self.colorBtn.clicked.connect(self.live_update)
+        self.opacitySlider.valueChanged.connect(self.live_update)
+        self.useColorOverlayCheck.stateChanged.connect(self.live_update)
+
         self.sizeSlider.valueChanged.connect(self.update_size)
         self.sizeSlider.installEventFilter(self)
         self.installEventFilter(self)
+        self.profileCombo.currentTextChanged.connect(self.change_profile)
 
         btnBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         layout.addWidget(btnBox)
         for btn in btnBox.buttons():
             btn.setFocusPolicy(QtCore.Qt.NoFocus)
 
+        # Exit button
+        self.exitBtn = QtWidgets.QPushButton("Exit")
+        layout.addWidget(self.exitBtn)
+        self.exitBtn.clicked.connect(self.exit_app)
+
         self.setLayout(layout)
         btnBox.accepted.connect(self.accept)
         btnBox.rejected.connect(self.reject)
 
+    def live_update(self, *args):
+        # Update settings for live preview
+        self.settings["color"] = self.colorBtn.palette().button().color().name()
+        self.settings["opacity"] = self.opacitySlider.value() / 100.0
+        self.settings["use_color_overlay"] = self.useColorOverlayCheck.isChecked()
+        self.crosshair.load_crosshair()
+        self.crosshair.update()
+
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.KeyPress:
-            # Move crosshair with arrow keys
-            step = 1  # Pixel sensitivity
+            step = 1
             if event.key() == QtCore.Qt.Key_Left:
                 self.crosshair.move_crosshair(-step, 0)
+                event.accept()  # Prevent dialog navigation
                 return True
             elif event.key() == QtCore.Qt.Key_Right:
                 self.crosshair.move_crosshair(step, 0)
+                event.accept()
                 return True
             elif event.key() == QtCore.Qt.Key_Up:
                 self.crosshair.move_crosshair(0, -step)
+                event.accept()
                 return True
             elif event.key() == QtCore.Qt.Key_Down:
                 self.crosshair.move_crosshair(0, step)
+                event.accept()
                 return True
         return super().eventFilter(obj, event)
 
@@ -84,10 +175,50 @@ class SettingsDialog(QtWidgets.QDialog):
         self.crosshair.load_crosshair()
         self.crosshair.follow_mouse()
 
+    def pick_color(self):
+        color = QtWidgets.QColorDialog.getColor(QtGui.QColor(self.settings.get("color", "#FF0000")), self)
+        if color.isValid():
+            self.colorBtn.setStyleSheet(f"background-color: {color.name()}")
+            self.settings["color"] = color.name()
+            self.live_update()
+
     def get_settings(self):
         return {
-            "size": int(self.sizeSlider.value())
+            "size": int(self.sizeSlider.value()),
+            "hide_on_right_click": self.hideRightClickCheck.isChecked(),
+            "profile": self.profileCombo.currentText(),
+            "color": self.colorBtn.palette().button().color().name(),
+            "opacity": self.opacitySlider.value() / 100.0,
+            "use_color_overlay": self.useColorOverlayCheck.isChecked()
         }
+
+    def change_profile(self, profile_name):
+        if profile_name in self.profiles:
+            prof = self.profiles[profile_name]
+            self.sizeSlider.setValue(prof.get("size", 40))
+            self.hideRightClickCheck.setChecked(prof.get("hide_on_right_click", True))
+            self.useColorOverlayCheck.setChecked(prof.get("use_color_overlay", True))
+
+    def save_profile(self):
+        name, ok = QtWidgets.QInputDialog.getText(self, "Save Profile", "Profile name:")
+        if ok and name:
+            self.profiles[name] = {
+                "size": int(self.sizeSlider.value()),
+                "hide_on_right_click": self.hideRightClickCheck.isChecked(),
+                "crosshair": self.crosshair.settings.get("crosshair", "crosshair.png"),
+                "x": self.crosshair.settings.get("x", 0),
+                "y": self.crosshair.settings.get("y", 0),
+                "profile": name,
+                "color": self.colorBtn.palette().button().color().name(),
+                "opacity": self.opacitySlider.value() / 100.0,
+                "use_color_overlay": self.useColorOverlayCheck.isChecked()
+            }
+            save_profiles(self.profiles)
+            self.profileCombo.addItem(name)
+            self.profileCombo.setCurrentText(name)
+
+    def exit_app(self):
+        QtWidgets.QApplication.quit()
 
 class Crosshair(QtWidgets.QWidget):
     def __init__(self):
@@ -107,6 +238,49 @@ class Crosshair(QtWidgets.QWidget):
         self.timer.timeout.connect(self.follow_mouse)
         self.timer.start(30)
         self.installEventFilter(self)
+        self.visible_state = True
+        self.right_click_hidden = False
+
+        self.start_hotkey_threads()
+
+    def start_hotkey_threads(self):
+        # F3 toggle
+        def listen_f3():
+            while True:
+                keyboard.wait("f3")
+                QtCore.QMetaObject.invokeMethod(self, "toggle_visibility", QtCore.Qt.QueuedConnection)
+        threading.Thread(target=listen_f3, daemon=True).start()
+
+        # Right mouse button hide (use mouse library)
+        def listen_right_click():
+            while True:
+                mouse.wait(button='right', target_types=('down',))
+                if self.settings.get("hide_on_right_click", True):
+                    QtCore.QMetaObject.invokeMethod(self, "hide_crosshair_temp", QtCore.Qt.QueuedConnection)
+                    mouse.wait(button='right', target_types=('up',))
+                    QtCore.QMetaObject.invokeMethod(self, "show_crosshair_temp", QtCore.Qt.QueuedConnection)
+        threading.Thread(target=listen_right_click, daemon=True).start()
+
+    @QtCore.pyqtSlot()
+    def toggle_visibility(self):
+        if self.visible_state:
+            self.hide()
+            self.visible_state = False
+        else:
+            self.show()
+            self.visible_state = True
+
+    @QtCore.pyqtSlot()
+    def hide_crosshair_temp(self):
+        if self.visible_state:
+            self.hide()
+            self.right_click_hidden = True
+
+    @QtCore.pyqtSlot()
+    def show_crosshair_temp(self):
+        if self.right_click_hidden:
+            self.show()
+            self.right_click_hidden = False
 
     def make_clickthrough(self):
         hwnd = int(self.winId())
@@ -117,17 +291,37 @@ class Crosshair(QtWidgets.QWidget):
         try:
             crosshair_path = self.settings.get("crosshair", "crosshair.png")
             size = int(self.settings.get("size", 40))
+            color = QtGui.QColor(self.settings.get("color", "#FF0000"))
+            opacity = float(self.settings.get("opacity", 1.0))
+            use_overlay = self.settings.get("use_color_overlay", True)
             if os.path.exists(crosshair_path):
                 pixmap = QtGui.QPixmap(crosshair_path)
                 if pixmap.isNull():
-                    pixmap = self.draw_default_crosshair(size)
+                    pixmap = self.draw_default_crosshair(size, color)
+                else:
+                    if use_overlay:
+                        # Apply color overlay (works best with white PNGs)
+                        image = pixmap.toImage().convertToFormat(QtGui.QImage.Format_ARGB32)
+                        for y in range(image.height()):
+                            for x in range(image.width()):
+                                pixel = image.pixelColor(x, y)
+                                alpha = pixel.alpha()
+                                if alpha > 0:
+                                    image.setPixelColor(x, y, QtGui.QColor(color.red(), color.green(), color.blue(), alpha))
+                        pixmap = QtGui.QPixmap.fromImage(image)
             else:
-                pixmap = self.draw_default_crosshair(size)
-            self.crosshair = pixmap.scaled(
-                size, size,
-                QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation
-            )
-            # Check pixmap size
+                pixmap = self.draw_default_crosshair(size, color)
+            pixmap = pixmap.scaled(size, size, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+            # Apply opacity
+            if opacity < 1.0:
+                temp = QtGui.QPixmap(pixmap.size())
+                temp.fill(QtCore.Qt.transparent)
+                painter = QtGui.QPainter(temp)
+                painter.setOpacity(opacity)
+                painter.drawPixmap(0, 0, pixmap)
+                painter.end()
+                pixmap = temp
+            self.crosshair = pixmap
             w, h = self.crosshair.width(), self.crosshair.height()
             if w > 0 and h > 0:
                 self.resize(w, h)
@@ -135,14 +329,14 @@ class Crosshair(QtWidgets.QWidget):
                 print("Invalid pixmap size:", w, h)
         except Exception as e:
             print("load_crosshair error:", e)
-            self.crosshair = self.draw_default_crosshair(40)
+            self.crosshair = self.draw_default_crosshair(40, QtGui.QColor("#FF0000"))
             self.resize(40, 40)
 
-    def draw_default_crosshair(self, size):
+    def draw_default_crosshair(self, size, color):
         pixmap = QtGui.QPixmap(size, size)
         pixmap.fill(QtCore.Qt.transparent)
         painter = QtGui.QPainter(pixmap)
-        pen = QtGui.QPen(QtCore.Qt.red, 2)
+        pen = QtGui.QPen(color, 2)
         painter.setPen(pen)
         painter.drawLine(size//2, 0, size//2, size)
         painter.drawLine(0, size//2, size, size//2)
@@ -181,7 +375,6 @@ class Crosshair(QtWidgets.QWidget):
     @QtCore.pyqtSlot()
     def open_settings(self):
         print("Settings window opened")
-        # Backup current settings before opening settings
         old_settings = self.settings.copy()
         dialog = SettingsDialog(self.settings, self, None)
         dialog.setWindowFlags(QtCore.Qt.Window)
@@ -193,7 +386,6 @@ class Crosshair(QtWidgets.QWidget):
             self.load_crosshair()
             print("Settings loaded")
         else:
-            # If Cancel pressed, restore old settings
             self.settings = old_settings
             save_settings(self.settings)
             self.load_crosshair()
@@ -201,7 +393,7 @@ class Crosshair(QtWidgets.QWidget):
 
     def closeEvent(self, event):
         print("Crosshair tried to close the window!")
-        event.ignore()  # Prevent closing
+        event.ignore()
 
 app = QtWidgets.QApplication(sys.argv)
 w = Crosshair()
