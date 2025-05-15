@@ -284,6 +284,7 @@ class Crosshair(QtWidgets.QWidget):
         self.settings_open = False  # Add this line
 
         self.start_hotkey_threads()
+        self.create_tray_icon()  # Tray icon fonksiyonunu çağır
 
     def start_hotkey_threads(self):
         # F3 toggle
@@ -440,6 +441,21 @@ class Crosshair(QtWidgets.QWidget):
     def closeEvent(self, event):
         print("Crosshair tried to close the window!")
         event.ignore()
+
+    def create_tray_icon(self):
+        self.tray = QtWidgets.QSystemTrayIcon(self)
+        icon = QtGui.QIcon("crosshair.ico")  # Kendi ikon dosyanı buraya koyabilirsin
+        self.tray.setIcon(icon)
+        self.tray.setVisible(True)
+
+        menu = QtWidgets.QMenu()
+        show_action = menu.addAction("Show/Hide Crosshair")
+        show_action.triggered.connect(self.toggle_visibility)
+        settings_action = menu.addAction("Settings")
+        settings_action.triggered.connect(self.open_settings)
+        exit_action = menu.addAction("Exit")
+        exit_action.triggered.connect(QtWidgets.QApplication.quit)
+        self.tray.setContextMenu(menu)
 
 app = QtWidgets.QApplication(sys.argv)
 w = Crosshair()
