@@ -21,4 +21,4 @@ Want a better aim? crosshairZ has your back 🎯
 
 ---
 
-Im still working on it so if there is any bug please conntet to "zinarr" in discord
+I'm still actively working on this project, so if you find any bugs or have suggestions, feel free to contact me on Discord: zinarr
