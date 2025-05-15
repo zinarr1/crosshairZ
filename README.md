@@ -8,18 +8,18 @@ Whether your game lacks a built-in crosshair or you just want a clean static aim
 ## ⚙️ Features
 
 - 🔲 Always-on-top transparent overlay
-- 🎨 Customizable crosshair image – replace `crosshair.png` with your own
+- 🎨 Customizable crosshair image – replace `crosshair.png` or select your own PNG via settings
+- 💾 Save and load multiple profiles, including selected PNG paths
 - ⬅️➡️ Move crosshair using **arrow keys**
 - 🎯 Toggle visibility with **F3**
 - 🖱️ Temporarily hide crosshair by holding **Right Mouse Button**
   - (Can be enabled/disabled via **"Hide on right click"** setting)
 - 🌈 **Live color and opacity control** – instantly updates crosshair appearance
-- 🖌️ **PNG color overlay** option – apply chosen color over white and black PNGs
-- 💾 **Settings and profiles** saved as `.json`
-  - Create, save, and load multiple custom profiles
+- 🖌️ **PNG color overlay** option – apply chosen color over white PNGs
 - ⚙️ Settings menu:
-  - Open with **F2**
+  - Open with **F2** (prevents opening multiple settings windows simultaneously)
   - Adjust position with arrow keys while settings are open
+  - Select crosshair PNG with **"Select PNG"** button
   - Exit app with the **"Exit" button**
 - 🖥️ Works on fullscreen and windowed games
 - 🔒 Safe – no interaction with game memory or files
