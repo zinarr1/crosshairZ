@@ -9,6 +9,7 @@ Whether your game lacks a built-in crosshair or you just want a clean static aim
 
 - 🔲 Always-on-top transparent overlay
 - 🎨 Customizable crosshair style and size – just replace `crosshair.png` with your own design
+- 🎯 Change crosshair position using **arrow keys**
 - 🖥️ Works with both fullscreen and windowed games
 - 🔒 No game file modifications – 100% safe overlay
 - 🪶 Lightweight and minimal resource usage
