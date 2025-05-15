@@ -98,6 +98,20 @@ class SettingsDialog(QtWidgets.QDialog):
         layout.addRow(self.saveProfileBtn)
         self.saveProfileBtn.clicked.connect(self.save_profile)
 
+        self.deleteProfileBtn = QtWidgets.QPushButton("Delete Profile")
+        layout.addRow(self.deleteProfileBtn)
+        self.deleteProfileBtn.clicked.connect(self.delete_profile)
+
+        # Select PNG button
+        self.pngPath = settings.get("crosshair", "crosshair.png")
+        self.pngLabel = QtWidgets.QLabel(os.path.basename(self.pngPath))
+        self.selectPngBtn = QtWidgets.QPushButton("Select PNG")
+        self.selectPngBtn.clicked.connect(self.select_png)
+        pngLayout = QtWidgets.QHBoxLayout()
+        pngLayout.addWidget(self.selectPngBtn)
+        pngLayout.addWidget(self.pngLabel)
+        layout.addRow("Crosshair PNG:", pngLayout)
+
         # Color picker
         self.colorBtn = QtWidgets.QPushButton()
         self.colorBtn.setStyleSheet(f"background-color: {settings.get('color', '#FF0000')}")
@@ -139,11 +153,19 @@ class SettingsDialog(QtWidgets.QDialog):
         btnBox.accepted.connect(self.accept)
         btnBox.rejected.connect(self.reject)
 
+    def select_png(self):
+        fname, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Select PNG", "", "PNG Files (*.png)")
+        if fname:
+            self.pngPath = fname
+            self.pngLabel.setText(os.path.basename(fname))
+            self.settings["crosshair"] = fname
+            self.live_update()
+
     def live_update(self, *args):
-        # Update settings for live preview
         self.settings["color"] = self.colorBtn.palette().button().color().name()
         self.settings["opacity"] = self.opacitySlider.value() / 100.0
         self.settings["use_color_overlay"] = self.useColorOverlayCheck.isChecked()
+        self.settings["crosshair"] = self.pngPath
         self.crosshair.load_crosshair()
         self.crosshair.update()
 
@@ -189,7 +211,8 @@ class SettingsDialog(QtWidgets.QDialog):
             "profile": self.profileCombo.currentText(),
             "color": self.colorBtn.palette().button().color().name(),
             "opacity": self.opacitySlider.value() / 100.0,
-            "use_color_overlay": self.useColorOverlayCheck.isChecked()
+            "use_color_overlay": self.useColorOverlayCheck.isChecked(),
+            "crosshair": self.pngPath
         }
 
     def change_profile(self, profile_name):
@@ -198,6 +221,12 @@ class SettingsDialog(QtWidgets.QDialog):
             self.sizeSlider.setValue(prof.get("size", 40))
             self.hideRightClickCheck.setChecked(prof.get("hide_on_right_click", True))
             self.useColorOverlayCheck.setChecked(prof.get("use_color_overlay", True))
+            self.colorBtn.setStyleSheet(f"background-color: {prof.get('color', '#FF0000')}")
+            self.opacitySlider.setValue(int(prof.get("opacity", 1.0) * 100))
+            self.pngPath = prof.get("crosshair", "crosshair.png")
+            self.pngLabel.setText(os.path.basename(self.pngPath))
+            self.settings.update(prof)
+            self.live_update()
 
     def save_profile(self):
         name, ok = QtWidgets.QInputDialog.getText(self, "Save Profile", "Profile name:")
@@ -205,17 +234,29 @@ class SettingsDialog(QtWidgets.QDialog):
             self.profiles[name] = {
                 "size": int(self.sizeSlider.value()),
                 "hide_on_right_click": self.hideRightClickCheck.isChecked(),
-                "crosshair": self.crosshair.settings.get("crosshair", "crosshair.png"),
-                "x": self.crosshair.settings.get("x", 0),
-                "y": self.crosshair.settings.get("y", 0),
+                "crosshair": self.pngPath,
                 "profile": name,
                 "color": self.colorBtn.palette().button().color().name(),
                 "opacity": self.opacitySlider.value() / 100.0,
                 "use_color_overlay": self.useColorOverlayCheck.isChecked()
             }
             save_profiles(self.profiles)
-            self.profileCombo.addItem(name)
+            if self.profileCombo.findText(name) == -1:
+                self.profileCombo.addItem(name)
             self.profileCombo.setCurrentText(name)
+
+    def delete_profile(self):
+        name = self.profileCombo.currentText()
+        if name == "Default":
+            QtWidgets.QMessageBox.warning(self, "Warning", "Default profile cannot be deleted.")
+            return
+        reply = QtWidgets.QMessageBox.question(self, "Delete Profile", f"Delete profile '{name}'?", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if reply == QtWidgets.QMessageBox.Yes:
+            self.profiles.pop(name, None)
+            save_profiles(self.profiles)
+            self.profileCombo.removeItem(self.profileCombo.currentIndex())
+            self.profileCombo.setCurrentText("Default")
+            self.change_profile("Default")
 
     def exit_app(self):
         QtWidgets.QApplication.quit()
@@ -240,6 +281,7 @@ class Crosshair(QtWidgets.QWidget):
         self.installEventFilter(self)
         self.visible_state = True
         self.right_click_hidden = False
+        self.settings_open = False  # Add this line
 
         self.start_hotkey_threads()
 
@@ -374,11 +416,15 @@ class Crosshair(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot()
     def open_settings(self):
+        if self.settings_open:
+            return  # Prevent opening multiple dialogs
+        self.settings_open = True
         print("Settings window opened")
         old_settings = self.settings.copy()
         dialog = SettingsDialog(self.settings, self, None)
         dialog.setWindowFlags(QtCore.Qt.Window)
         result = dialog.exec_()
+        self.settings_open = False  # Reset flag when dialog closes
         if result:
             print("Saving settings:", dialog.get_settings())
             self.settings.update(dialog.get_settings())
