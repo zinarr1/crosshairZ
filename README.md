@@ -57,4 +57,14 @@ Thanks for your support! 🙏
 
 ---
 
+# This software is not a virus.
+
+Your antivirus might warn you because the program uses system-level functions to control the mouse and keyboard (via libraries like `mouse` and `keyboard`).
+
+This is not malicious — it is required for the program to function properly.
+
+If you downloaded this from a trusted source, it is safe to run.
+
+---
+
 Want better aim? **crosshairZ** has your back 🎯.
