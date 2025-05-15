@@ -1,6 +1,6 @@
 # 🎯 crosshairZ
 
-**crosshairZ** is a lightweight, customizable, and open-source crosshair overlay for gamers.  
+**crosshairZ** is a lightweight, customizable, portable, and open-source crosshair overlay for gamers.  
 Whether your game lacks a built-in crosshair or you just want a clean static aim helper, crosshairZ gets the job done.
 
 ---
@@ -24,7 +24,7 @@ Whether your game lacks a built-in crosshair or you just want a clean static aim
 - 🖥️ Works on fullscreen and windowed games
 - 🔒 Safe – no interaction with game memory or files
 - 🪶 Minimal CPU/memory usage
-- 💻 Available as Python script and (soon) `.exe`
+- 💻 Available as Python script and `.exe`
 
 ---
 
