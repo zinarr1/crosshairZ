@@ -67,4 +67,14 @@ If you downloaded this from a trusted source, it is safe to run.
 
 ---
 
+DISCLAIMER:
+
+This software is provided "as is", without any warranties or guarantees of any kind.
+
+The developer is not responsible for any damage, data loss, or unexpected behavior caused by the use of this software.
+
+By using this software, you agree that you do so at your own risk.
+
+---
+
 Want better aim? **crosshairZ** has your back 🎯.
