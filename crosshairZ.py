@@ -444,7 +444,7 @@ class Crosshair(QtWidgets.QWidget):
 
     def create_tray_icon(self):
         self.tray = QtWidgets.QSystemTrayIcon(self)
-        icon = QtGui.QIcon("crosshair.ico")  # Kendi ikon dosyanı buraya koyabilirsin
+        icon = QtGui.QIcon("crosshair.ico")  
         self.tray.setIcon(icon)
         self.tray.setVisible(True)
 
