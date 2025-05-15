@@ -14,7 +14,7 @@ Whether your game lacks a built-in crosshair or you just want a clean static aim
 - 🖱️ Temporarily hide crosshair by holding **Right Mouse Button**
   - (Can be enabled/disabled via **"Hide on right click"** setting)
 - 🌈 **Live color and opacity control** – instantly updates crosshair appearance
-- 🖌️ **PNG color overlay** option – apply chosen color over white PNGs
+- 🖌️ **PNG color overlay** option – apply chosen color over white and black PNGs
 - 💾 **Settings and profiles** saved as `.json`
   - Create, save, and load multiple custom profiles
 - ⚙️ Settings menu:
