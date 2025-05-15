@@ -4,7 +4,7 @@ import os
 import threading
 import keyboard
 import ctypes
-import mouse  # Add this import
+import mouse
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 SETTINGS_FILE = "settings.json"
@@ -284,7 +284,7 @@ class Crosshair(QtWidgets.QWidget):
         self.settings_open = False  # Add this line
 
         self.start_hotkey_threads()
-        self.create_tray_icon()  # Tray icon fonksiyonunu çağır
+        self.create_tray_icon()  
 
     def start_hotkey_threads(self):
         # F3 toggle
