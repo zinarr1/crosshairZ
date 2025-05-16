@@ -17,7 +17,7 @@ And i made it in 2 hours (i think im spiderman)
 - 🖱️ Temporarily hide crosshair by holding **Right Mouse Button**
   - (Can be enabled/disabled via **"Hide on right click"** setting)
 - 🌈 **Live color and opacity control** – instantly updates crosshair appearance
-- 🖌️ **PNG color overlay** option – apply chosen color over white PNGs
+- 🖌️ **PNG color overlay** option – apply chosen color over white and black PNGs
 - ⚙️ Settings menu:
   - Open with **F2** (prevents opening multiple settings windows simultaneously)
   - Adjust position with arrow keys while settings are open
