@@ -26,7 +26,7 @@ And i made it in 2 hours (i think im spiderman)
 - 🖥️ Works on fullscreen and windowed games
 - 🔒 Safe – no interaction with game memory or files
 - 🪶 Minimal CPU/memory usage
-- 💻 Available as Python script and `.exe`
+- 💻 Available as `.exe`
 
 ---
 
