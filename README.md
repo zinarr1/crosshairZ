@@ -23,7 +23,7 @@ And i made it in 2 hours (i think im spiderman)
   - Adjust position with arrow keys while settings are open
   - Select crosshair PNG with **"Select PNG"** button
   - Exit app with the **"Exit" button**
-- 🖥️ Works on fullscreen and windowed games
+- 🖥️ Works on roblox only (i use that on some game like steam games but not working only roblox)
 - 🔒 Safe – no interaction with game memory or files
 - 🪶 Minimal CPU/memory usage
 - 💻 Available as `.exe`
