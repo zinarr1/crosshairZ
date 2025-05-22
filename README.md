@@ -19,11 +19,11 @@ And i made it in 2 hours with no error (i think im spiderman)
 - 🌈 **Live color and opacity control** – instantly updates crosshair appearance
 - 🖌️ **PNG color overlay** option – apply chosen color over white and black PNGs
 - ⚙️ Settings menu:
-  - Open with **F2** (prevents opening multiple settings windows simultaneously)
-  - Adjust position with arrow keys while settings are open
+  - Open with **F2**
+  - Adjust position with arrow keys while settings are open (first you have to click somewhere on settings)
   - Select crosshair PNG with **"Select PNG"** button
   - Exit app with the **"Exit" button**
-- 🖥️ Works on roblox only (i use that on some game like steam games but not working only roblox)
+- 🖥️ Works on roblox only (i use that on some game like steam games but not working only roblox and if i get support i will try my best for making it for all games)
 - 🔒 Safe – no interaction with game memory or files
 - 🪶 Minimal CPU/memory usage
 - 💻 Available as `.exe`
@@ -60,7 +60,9 @@ Thanks for your support! 🙏
 
 # This software is not a virus.
 
-Your antivirus might warn you because the program uses system-level functions to control the mouse and keyboard (via libraries like `mouse` and `keyboard`).
+Your antivirus might warn you because the program uses system-level functions to control the mouse and keyboard (via libraries like `pynput` and `keyboard`).
+pynput: for hide crosshair by holding **Right Mouse Button**
+keyboard: for **F2** and **F3**
 
 This is not malicious — it is required for the program to function properly.
 
