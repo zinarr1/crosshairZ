@@ -61,7 +61,9 @@ Thanks for your support! 🙏
 # This software is not a virus.
 
 Your antivirus might warn you because the program uses system-level functions to control the mouse and keyboard (via libraries like `pynput` and `keyboard`).
+
 pynput: for hide crosshair by holding **Right Mouse Button**
+
 keyboard: for **F2** and **F3**
 
 This is not malicious — it is required for the program to function properly.
