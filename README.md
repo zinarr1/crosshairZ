@@ -62,7 +62,7 @@ Thanks for your support! 🙏
 
 Your antivirus might warn you because the program uses system-level functions to control the mouse and keyboard (via libraries like `pynput` and `keyboard`).
 
-pynput: for hide crosshair by holding **Right Mouse Button**
+pynput: for hiding crosshair by holding **Right Mouse Button**
 
 keyboard: for **F2** and **F3**
 
