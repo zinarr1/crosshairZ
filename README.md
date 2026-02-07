@@ -2,7 +2,6 @@
 
 **crosshairZ** is a lightweight, customizable, portable, and open-source crosshair overlay for gamers.  
 Whether your game lacks a built-in crosshair or you just want a clean static aim helper, crosshairZ gets the job done.
-And i made it in 2 hours with no error (i think im spiderman)
 
 ---
 
