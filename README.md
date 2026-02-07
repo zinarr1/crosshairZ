@@ -11,7 +11,7 @@ And i made it in 2 hours with no error (i think im spiderman)
 - 🖥️ monitor select support – crosshair can be used on setups with multiple screens
 - 🔲 Always-on-top transparent overlay
 - 🎨 Customizable crosshair image – replace `crosshair.png` or select your own PNG via settings
-- 💾 Save and load multiple profiles, including selected PNG paths
+- 💾 Save and load multiple profiles (expect bugs), including selected PNG paths
 - ⬅️➡️ Move crosshair using **arrow keys**
 - 🎯 Toggle visibility with **F3**
 - 🖱️ Temporarily hide crosshair by holding **Right Mouse Button**
