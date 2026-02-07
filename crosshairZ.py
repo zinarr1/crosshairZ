@@ -1,3 +1,5 @@
+# Copyright © 2025 zinarr1
+
 import sys
 import json
 import os
@@ -649,4 +651,5 @@ if __name__ == "__main__":
     app.setWindowIcon(QtGui.QIcon("crosshair.ico"))
     w = Crosshair()
     w.show()
+
     sys.exit(app.exec_())
