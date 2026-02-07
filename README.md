@@ -80,5 +80,10 @@ The developer is not responsible for any damage, data loss, or unexpected behavi
 By using this software, you agree that you do so at your own risk.
 
 ---
+## License
+This project is licensed under the GNU General Public License v3 (GPL-3.0).
+
+Original author: zinarr1
+---
 
 Want better aim? **crosshairZ** has your back 🎯.
